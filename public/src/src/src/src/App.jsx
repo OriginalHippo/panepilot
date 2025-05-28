@@ -1,32 +1,26 @@
 import { useEffect, useState } from 'react';
 import { supabase } from './supabaseClient';
+import Auth from './components/Auth';
+import Layout from './components/Layout';
+import CustomerList from './components/CustomerList';
+import JobList from './components/JobList';
+import InvoiceList from './components/InvoiceList';
 
-// Placeholder Auth component (will add full version next)
-function Auth({ onAuth }) {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-white text-red-700">
-      <div>
-        <h1 className="text-3xl font-bold mb-6">PanePilot</h1>
-        <p className="mb-3">Auth component will go here.</p>
-      </div>
-    </div>
-  );
-}
-
-// Placeholder Layout component (will add full version next)
-function Layout({ user, onLogout, children }) {
+function Dashboard({ user }) {
   return (
     <div>
-      <header className="bg-white border-b border-red-200 p-4">
-        <div className="font-bold text-2xl text-red-700">PanePilot</div>
-      </header>
-      <main className="max-w-3xl mx-auto p-6">{children}</main>
+      <h2 className="text-xl font-bold text-red-700 mb-4">Dashboard</h2>
+      <ul className="list-disc pl-5">
+        <li>Welcome, <b>{user.email}</b>!</li>
+        <li>Use the navigation bar to view your Customers, Jobs, and Invoices.</li>
+      </ul>
     </div>
   );
 }
 
 export default function App() {
   const [user, setUser] = useState(null);
+  const [page, setPage] = useState('dashboard');
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => setUser(user));
@@ -37,10 +31,43 @@ export default function App() {
   }, []);
 
   if (!user) return <Auth onAuth={setUser} />;
+
+  let content;
+  if (page === 'customers') content = <CustomerList user={user} />;
+  else if (page === 'jobs') content = <JobList user={user} />;
+  else if (page === 'invoices') content = <InvoiceList user={user} />;
+  else content = <Dashboard user={user} />;
+
   return (
     <Layout user={user} onLogout={() => setUser(null)}>
-      <div className="text-xl text-red-700">Welcome, {user.email}!</div>
-      <div>Dashboard and navigation will go here next.</div>
+      {/* Navigation tabs */}
+      <div className="flex gap-2 mb-4">
+        <button
+          className={`px-4 py-2 rounded ${page === 'dashboard' ? 'bg-red-600 text-white' : 'bg-red-100 text-red-700'}`}
+          onClick={() => setPage('dashboard')}
+        >
+          Dashboard
+        </button>
+        <button
+          className={`px-4 py-2 rounded ${page === 'customers' ? 'bg-red-600 text-white' : 'bg-red-100 text-red-700'}`}
+          onClick={() => setPage('customers')}
+        >
+          Customers
+        </button>
+        <button
+          className={`px-4 py-2 rounded ${page === 'jobs' ? 'bg-red-600 text-white' : 'bg-red-100 text-red-700'}`}
+          onClick={() => setPage('jobs')}
+        >
+          Jobs
+        </button>
+        <button
+          className={`px-4 py-2 rounded ${page === 'invoices' ? 'bg-red-600 text-white' : 'bg-red-100 text-red-700'}`}
+          onClick={() => setPage('invoices')}
+        >
+          Invoices
+        </button>
+      </div>
+      {content}
     </Layout>
   );
 }
