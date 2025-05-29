@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-  // before build, ensure vite is executable
   "prebuild": "chmod +x node_modules/.bin/vite",
   "build": "vite build",
   "dev": "vite",
