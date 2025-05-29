@@ -3,10 +3,13 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "vite",
-    "build": "chmod +x node_modules/.bin/vite && vite build",
-    "preview": "vite preview"
-  },
+  // before build, ensure vite is executable
+  "prebuild": "chmod +x node_modules/.bin/vite",
+  "build": "vite build",
+  "dev": "vite",
+  "preview": "vite preview"
+},
+
   "dependencies": {
     "@supabase/supabase-js": "^2.39.3",
     "react": "^18.2.0",
